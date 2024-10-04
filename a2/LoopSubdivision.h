@@ -9,7 +9,7 @@
 
 #define Edge Vector2i		/* data structure for an edge: Vector2 with each component as an integer */
 #define Vertex Vector3		/* data structure for a vertex: Vector3 with each component as a floating-point number */
-#define Triangle Vector3i	/* data structure for a triangle: Vector3 with each component as a floating-point number */
+#define Triangle Vector3i	/* data structure for a triangle: Vector3i with each component as an integer number */
 
 // This function sort the two vertices of the input edge to make it unique to be used as a map key
 inline void SortEdgeVertices(Edge &edge) 
@@ -29,7 +29,11 @@ inline void SortEdgeVertices(Edge &edge)
 inline int FindTheOtherVertex(const Triangle &tri, int v0, int v1) 
 {
     /* your implementation for 2.(1) starts */	
-
+	for (int i = 0; i < 3; i++) {
+		if (tri[i] != v0 && tri[i] != v1) {
+			return tri[i];
+		}
+	}
 
 	/* your implementation for 2.(1) ends */
 		
@@ -45,7 +49,7 @@ inline Vertex SmoothOddVtx(const std::vector<Vertex> &old_vtx, const int p0, con
 	Vertex smoothed_odd_vtx = Vertex(0.0,0.0,0.0);
 
     /* your implementation for 2.(2) starts */	
-
+	smoothed_odd_vtx = 0.375 * (old_vtx[p0] + old_vtx[p1]) + 0.125 * (old_vtx[p2] + old_vtx[p3]);
 
     /* your implementation for 2.(2) ends */	
 	
@@ -62,7 +66,12 @@ inline Vertex SmoothEvenVtx(const std::vector<Vertex> &old_vtx, int v, const std
 	Vertex smoothed_even_vtx = Vertex(0.0,0.0,0.0);
 
     /* your implementation for 3.(1) starts */	
-
+	int n = nbs.size();
+	float beta = (n == 3) ? 3.0f / 16.0f : 3.0f / (8.0f * n);
+	smoothed_even_vtx = (1 - n * beta) * old_vtx[v];
+	for (int i = 0; i < n; i++) {
+		smoothed_even_vtx += beta * old_vtx[nbs[i]];
+	}
 
     /* your implementation for 3.(1) ends */	
 
@@ -90,7 +99,7 @@ inline void LoopSubdivision(TriangleMesh<3> &mesh)
 	// (1) add a new vertex to new_vtx for each edge on the old mesh; 
 	// (2) add four triangles ot new_tri for each triangle on the old mesh.
 	// For (1), you will add a new vertex (odd vertex) to the array of new_vtx for each edge in the old mesh. 
-	// The new vertex's position is the mid-point of the edge. The new vertex's index in the index of this vertex in new_vtx array. 
+	// The new vertex's position is the mid-point of the edge. The new vertex's index is the index of this vertex in new_vtx array. 
 	// For (2), you will add four sub-triangles to the array of new_tri for each triangle in the old mesh.
 	// Be careful with the orientation of each sub-triangle to make sure the three vertices follow a counterclockwise order. 
 	/////////////////////////////////////////////////////
@@ -118,10 +127,12 @@ inline void LoopSubdivision(TriangleMesh<3> &mesh)
 			if (edge_vtx_map.find(edge) == edge_vtx_map.end()){
 
 				/* your implementation for 1.(1) starts */
-				
+				new_vtx_pos = 0.5 * (old_vtx[edge[0]] + old_vtx[edge[1]]);
+				new_vtx_idx = new_vtx.size();
+				new_vtx.push_back(new_vtx_pos);
 				
 				/* your implementation for 1.(1) ends */
-				
+
 				edge_vtx_map[edge] = new_vtx_idx;	// update the edge_vtx_map with the index of the added vertex
 			}
 
@@ -130,9 +141,11 @@ inline void LoopSubdivision(TriangleMesh<3> &mesh)
 
 		// Step 1.(2): You will add four new triangles to new_tri. Make sure all triangles follow a counterclockwise order.
 		
-		/* your implementation for 1.(2) starts */
-		
-
+		/* your implementation for 1.(2) starts */\
+		new_tri.push_back({tri[0], tri_mid[0], tri_mid[2]});
+		new_tri.push_back({tri[1], tri_mid[1], tri_mid[0]});
+		new_tri.push_back({tri[2], tri_mid[2], tri_mid[1]});
+		new_tri.push_back({tri_mid[0], tri_mid[1], tri_mid[2]});
 		/* your implementation for 1.(2) ends */
 	}
 
@@ -178,9 +191,8 @@ inline void LoopSubdivision(TriangleMesh<3> &mesh)
 		// Step 2.(2): implement the function SmoothOddVtx() (see function declared above)
 
 		// Step 2.(3): call SmoothOddVtx() to calculate the new position for each odd vertex
-
 		/* your implementation for 2.(3) starts */
-
+		new_vtx[v] = SmoothOddVtx(new_vtx, p0, p1, p2, p3);
 		
 		/* your implementation for 2.(3) ends */
 	}
@@ -216,7 +228,7 @@ inline void LoopSubdivision(TriangleMesh<3> &mesh)
 		// Step 3.(2) call SmoothEvenVtx() to calculate the new position for each even vertex
 
 		/* your implementation for 3.(2) starts */
-		
+		new_vtx[v] = SmoothEvenVtx(new_vtx, v, nbs);
 		/* your implementation for 3.(2) ends */
 	}
 

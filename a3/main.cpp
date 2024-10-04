@@ -23,6 +23,7 @@
 #define CLOCKS_PER_SEC 100000
 #endif
 
+#define M_PI 3.1415926535898
 #define DegreesToRadians(degrees) (degrees * M_PI / 180)
 
 class MyDriver : public OpenGLViewer
@@ -51,11 +52,11 @@ public:
 
 	virtual void Initialize_Data()
 	{
-		Create_Background(OpenGLColor(0.71f, 0.6f, 0.17f, 1.f), OpenGLColor(0.71f, 0.87f, 0.17f, 1.f));
+		Create_Background(OpenGLColor(0.5f, 0.6f, 0.9f, 1.f), OpenGLColor(0.21f, 0.1f, 0.4f, 1.f));
 		OpenGLShaderLibrary::Instance()->Add_Shader_From_File("a3_vert.vert", "a3_frag.frag", "a3_shading");	////bind shader for this assignment
 
-		Create_Angry_Bird_Palace();					////TODO: Comment this line when you start to implement your customized scene
-		//// Create_Angry_Bird_Garden();			////TODO: Uncomment this line when you start to implement your customized scene
+		// Create_Angry_Bird_Palace();					////TODO: Comment this line when you start to implement your customized scene
+		Create_Angry_Bird_Garden();			////TODO: Uncomment this line when you start to implement your customized scene
 
 	}
 
@@ -69,7 +70,7 @@ public:
 		//// draw the ground
 		Add_Ground();
 
-		//// Step 1: add the castle by reading the model from "castle.obj" 
+		//// Step 1: add the castle by reading the model from "castle.obj"
 		//// The model needs to undergo the following transform operations in sequence: 
 		//// (1) rotate *counterclockwisely* around the y-axis by 90 degrees, 
 		//// (2) uniformly scale by a factor of 5,
@@ -80,13 +81,22 @@ public:
 		/* Your implementation starts. You may add/remove/edit any part of the code in the following. */
 		auto castle = Add_Obj_Mesh_Object_From_File("castle.obj", OpenGLColor(.6f, .6f, .6f, 1.f));
 		{
-			Matrix4f t;
-			t << 1., 0., 0., 0.,
-				0., 1., 0., 0.,
+			Matrix4f t1;
+			t1 << 0, 0., 1., 0.,
+				0, 1., 0., 0.,
+				-1, 0., 0, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 5., 0., 0, 0.,
+				0, 5., 0., 0.,
+				0., 0., 5., 0.,
+				0., 0., 0., 1;
+			Matrix4f t3;
+			t3 << 1., 0., 0., 0.,
+				0., 1., 0., 1.3,
 				0., 0., 1., 0.,
 				0., 0., 0., 1.;
-
-			castle->Set_Model_Matrix(t);
+			castle->Set_Model_Matrix(t3 * t2 * t1);
 		}
 		/* Your implementation ends. */
 
@@ -99,13 +109,22 @@ public:
 		/* Your implementation starts. You may add/remove/edit any part of the code in the following. */
 		auto axes = Add_Obj_Mesh_Object_From_File("axes.obj", OpenGLColor(.9f, .5f, .0f, 1.f));
 		{
-			Matrix4f t;
-			t << 1., 0., 0., 0.,
-				0., 1., 0., 0.,
+			Matrix4f t1;
+			t1 << 0, 0., 1., 0.,
+				0, 1., 0., 0.,
+				-1, 0., 0, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 2., 0., 0, 0.,
+				0, 2., 0., 0.,
+				0., 0., 2., 0.,
+				0., 0., 0., 1;
+			Matrix4f t3;
+			t3 << 1., 0., 0., 6.,
+				0., 1., 0., 1,
 				0., 0., 1., 0.,
 				0., 0., 0., 1.;
-
-			axes->Set_Model_Matrix(t);
+			axes->Set_Model_Matrix(t3 * t2 * t1);
 		}
 		/* Your implementation ends. */
 
@@ -118,13 +137,22 @@ public:
 		/* Your implementation starts. You may add/remove/edit any part of the code in the following. */
 		auto tower = Add_Obj_Mesh_Object_From_File("tower.obj", OpenGLColor(.0f, .5f, .5f, 1.f));
 		{
-			Matrix4f t;
-			t << 1., 0., 0., 0.,
-				0., 1., 0., 0.,
+			Matrix4f t1;
+			t1 << sqrt(2)/2, 0., -sqrt(2)/2, 0.,
+				0, 1., 0., 0.,
+				sqrt(2)/2, 0., sqrt(2)/2, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 2., 0., 0, 0.,
+				0, 6., 0., 0.,
+				0., 0., 2., 0.,
+				0., 0., 0., 1;
+			Matrix4f t3;
+			t3 << 1., 0., 0., -6.,
+				0., 1., 0., 3,
 				0., 0., 1., 0.,
 				0., 0., 0., 1.;
-
-			tower->Set_Model_Matrix(t);
+			tower->Set_Model_Matrix(t3 * t2 * t1);
 		}
 		/* Your implementation ends. */
 
@@ -139,14 +167,23 @@ public:
 		for (int i = 0; i < tree_num; i++) {
 			auto tree = Add_Obj_Mesh_Object_From_File("tree1.obj", OpenGLColor(0.f, 1.f, 0.f, 1.f));
 			{
-				Matrix4f t;
-				t << 1., 0., 0., 0.,
-					0., 1., 0., 0.,
+				float radians = DegreesToRadians(360/24 * i);
+				Matrix4f t1;
+				t1 << 1., 0., 0., 8,
+					0., 1., 0., 0.5,
 					0., 0., 1., 0.,
 					0., 0., 0., 1.;
-				tree->Set_Model_Matrix(t);
+				Matrix4f t2;
+				t2 << cos(radians), 0., sin(radians), 0.,
+					0, 1., 0., 0.,
+					-sin(radians), 0., cos(radians), 0.,
+					0., 0., 0., 1;
+				tree->Set_Model_Matrix(t2 * t1);
 			}
 		}
+
+		
+		
 		/* Your implementation ends. */
 
 		//// Step 5: add 36 trees by reading the model from "tree2.obj" 
@@ -160,12 +197,18 @@ public:
 		for (int i = 0; i < tree2_num; i++) {
 			auto tree = Add_Obj_Mesh_Object_From_File("tree2.obj", OpenGLColor(0.f, 1.f, 0.f, 1.f));
 			{
-				Matrix4f t;
-				t << 1., 0., 0., 0.,
-					0., 1., 0., 0.,
+				float radians = DegreesToRadians(360/36 * i);
+				Matrix4f t1;
+				t1 << 1., 0., 0., 10,
+					0., 1., 0., 0.5,
 					0., 0., 1., 0.,
 					0., 0., 0., 1.;
-				tree->Set_Model_Matrix(t);
+				Matrix4f t2;
+				t2 << cos(radians), 0., sin(radians), 0.,
+					0, 1., 0., 0.,
+					-sin(radians), 0., cos(radians), 0.,
+					0., 0., 0., 1;
+				tree->Set_Model_Matrix(t2 * t1);
 			}
 		}
 		/* Your implementation ends. */
@@ -182,8 +225,8 @@ public:
 			{
 				Matrix4f t;
 				t << 1., 0., 0., 0.,
-					0., 1., 0., 0.,
-					0., 0., 1., 0.,
+					0., 0.1, 0., 0.,
+					0., 0., 0.5, 3 + i,
 					0., 0., 0., 1.;
 				cube1->Set_Model_Matrix(t);
 			}
@@ -209,12 +252,19 @@ public:
 		for (int i = 0; i < bird_num; i++) {
 			auto bird = Add_Obj_Mesh_Object_From_File("bird.obj", OpenGLColor(1.f, 0.2f, 0.f, 1.f));
 			{
-				Matrix4f t;
-				t << 1., 0., 0., 0.,
-					0., 1., 0., 0.,
+				double time = 0.2 + 0.3 * i;
+				float radians = DegreesToRadians(150 * time);
+				Matrix4f angleMatrix;
+				angleMatrix << cos(radians), sin(radians), 0., 0.,
+					-sin(radians), cos(radians), 0., 0.,
 					0., 0., 1., 0.,
 					0., 0., 0., 1.;
-				bird->Set_Model_Matrix(t);
+				Matrix4f t;
+				t << 1., 0., 0., -5 + 5 * time,
+					0., 1., 0., 9.8 * time - 0.5 * 9.8 * time * time,
+					0., 0., 1., 0.,
+					0., 0., 0., 1.;
+				bird->Set_Model_Matrix(t * angleMatrix);
 			}
 		}
 		/* Your implementation ends. */
@@ -234,7 +284,106 @@ public:
 
 		//// draw the ground, comment them out if you don't need them
 		Add_Ground();
+		auto grass = Add_Obj_Mesh_Object_From_File("garden/grass3.obj", OpenGLColor(.1f, .3f, .15f, 1.f));
+		{
+			Matrix4f t1;
+			t1 << 23., 0., 0., 0.,
+				0., 23., 0., 0,
+				0., 0., 23., 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 1., 0., 0., 0.,
+				0., 1., 0., 0.4,
+				0., 0., 1., 0.,
+				0., 0., 0., 1.;
+			grass->Set_Model_Matrix(t2 * t1);
+		}
 
+		
+		for (int i = 0; i < 4; i++) {
+			auto buildings = Add_Obj_Mesh_Object_From_File("garden/building1.obj", OpenGLColor(.5f, .8f, .5f, 1.f));
+			Matrix4f t2;
+			t2 << 0, 0., 1., 0.,
+				0, 1., 0., 0.,
+				-1, 0., 0, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t1;
+			t1 << 3., 0., 0., 2.5 * (i - 3),
+				0., 3., 0., 0.4,
+				0., 0., 3., 8.,
+				0., 0., 0., 1.;
+			buildings->Set_Model_Matrix(t2 * t1);
+		}
+
+		auto flamingo = Add_Obj_Mesh_Object_From_File("garden/flamingo.obj", OpenGLColor(.8f, .3f, .3f, 1.f));
+		{
+			Matrix4f t1;
+			t1 << 0.1, 0., 0., 0.,
+				0, 0.1, 0., 0.,
+				0, 0., 0.1, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 1., 0., 0., 0.,
+				0., 0., 1., 0.,
+				0., -1., 0., 0.,
+				0., 0., 0., 1.;
+			Matrix4f t3;
+			t3 << 1., 0., 0., 0.,
+				0., 1., 0., 0.,
+				0., 0., 1., -4.,
+				0., 0., 0., 1.;
+			flamingo->Set_Model_Matrix(t3 * t1 * t2);
+		}
+
+		auto statueepikur = Add_Obj_Mesh_Object_From_File("garden/statueepikur.obj", OpenGLColor(.2f, .6f, .2f, 1.f));
+		{
+			Matrix4f t1;
+			t1 << -1, 0., 0., 0.,
+				0, 1., 0., 0.,
+				0, 0., -1, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 1, 0., 0., -0.7,
+				0., 1, 0., 0.,
+				0., 0., 1, 0.8,
+				0., 0., 0., 1.;
+			Matrix4f t3;
+			t3 << 6., 0., 0., 0.,
+				0., 6., 0., 0.,
+				0., 0., 6., 0.,
+				0., 0., 0., 1.;
+			statueepikur->Set_Model_Matrix(t3 * t2 * t1);
+		}
+
+		auto chair = Add_Obj_Mesh_Object_From_File("garden/chair4.obj", OpenGLColor(.3f, .45f, .95f, 1.f));
+		{
+			Matrix4f t1;
+			t1 << 6, 0., 0., 0.,
+				0., 6, 0., 0.,
+				0., 0., 6, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 1., 0., 0., -0.8,
+				0., 1., 0., 0.3,
+				0., 0., 1., -0.8,
+				0., 0., 0., 1.;
+			chair->Set_Model_Matrix(t1 * t2);
+		}
+
+		auto wireframeman = Add_Obj_Mesh_Object_From_File("garden/wireframeman.obj", OpenGLColor(.9f, .15f, .9f, 1.f));
+		{
+			Matrix4f t1;
+			t1 << 0.05, 0., 0., 0.,
+				0., 0.05, 0., 0.,
+				0., 0., 0.05, 0.,
+				0., 0., 0., 1.;
+			Matrix4f t2;
+			t2 << 1., 0., 0., 0.,
+				0., 1., 0., -28,
+				0., 0., 1., -9.,
+				0., 0., 0., 1.;
+			wireframeman->Set_Model_Matrix(t2 * t1);
+		}
 		/* Your implementation ends. */
 	}
 
