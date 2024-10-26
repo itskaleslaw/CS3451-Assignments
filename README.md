@@ -13,3 +13,13 @@ A2 - Loop Subdivision (Algorithm in C++, Eigen library)
 A3 - Matrix Transformations
 ![Screenshot 2024-09-30 180802](https://github.com/user-attachments/assets/521a165f-6883-43e2-a5a1-7dda9ff08db3)
 ![Screenshot 2024-09-30 220707](https://github.com/user-attachments/assets/651eb35f-c6ec-4c0c-9c53-fc1fd39eb4f6)
+
+A4 - Lighting and Shading
+
+![normal vectors as color](https://github.com/user-attachments/assets/a8709220-3149-4917-9352-29f499e84f14)
+![phong two lights](https://github.com/user-attachments/assets/880efdad-c875-4ae9-a9d9-9eec06b32deb)
+![bottle 2](https://github.com/user-attachments/assets/476f7a1f-d274-40c2-ab27-d6ca4211eac8)
+
+A5 - Texturing
+![gear1](https://github.com/user-attachments/assets/a3356095-a604-42d5-a7d0-f2ea7cba9745)
+![normal mapping](https://github.com/user-attachments/assets/2f32aa7d-d6c7-4fd0-9802-e4b062f28a76)
