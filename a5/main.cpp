@@ -89,7 +89,55 @@ public:
     void Create_Old_Object_Scene()
     {
         Create_Background(OpenGLColor(0.1f, 0.1f, 0.1f, 1.f), OpenGLColor(0.1f, 0.1f, .3f, 1.f));   //// add background
+        {
+            auto gear = Add_Obj_Mesh_Object("Gear2.obj");
+            gear->name = "gear";
 
+            Matrix4f t, t2;
+            t << 1, 0, 0, 1.5,
+                0, 1, 0, 1.5,
+                0, 0, 1, 0,
+                0, 0, 0, 1;
+            t2 << cos(35), -sin(35), 0, 0,
+                sin(35), cos(35), 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1;
+            gear->Set_Model_Matrix(t * t2);
+
+            // Material
+            gear->Set_Ka(Vector3f(0.1, 0.1, 0.1));
+            gear->Set_Kd(Vector3f(0.7, 0.7, 0.7));
+            gear->Set_Ks(Vector3f(2, 2, 2));
+            gear->Set_Shininess(110);
+
+            Add_Textture_For_Mesh_Object(gear, "gear_color.jpg", TexType::Color);
+            Add_Textture_For_Mesh_Object(gear, "normap_maps/3.jpg", TexType::Normal);
+        }
+
+        {
+            auto gear2 = Add_Obj_Mesh_Object("Gear1.obj");
+            gear2->name = "gear2";
+
+            Matrix4f t, t2;
+            t << 1, 0, 0, 9,
+                0, 1, 0, -4,
+                0, 0, 1, -3,
+                0, 0, 0, 1;
+            t2 << 1, 0, 0, 0,
+                0, 0, -1, 0,
+                0, 1, 0, 0,
+                0, 0, 0, 1;
+            gear2->Set_Model_Matrix(t * t2);
+
+            // Material
+            gear2->Set_Ka(Vector3f(0.1, 0.1, 0.1));
+            gear2->Set_Kd(Vector3f(0.7, 0.7, 0.7));
+            gear2->Set_Ks(Vector3f(2, 2, 2));
+            gear2->Set_Shininess(110);
+
+            Add_Textture_For_Mesh_Object(gear2, "gear2_color.jpg", TexType::Color);
+            Add_Textture_For_Mesh_Object(gear2, "normap_maps/3.jpg", TexType::Normal);
+        }
         //// Step 5: Add your customized mesh objects and specify their transform, material, and texture properties by mimicking Create_Bunny_Scene() 
         /* Your implementation starts */
 
@@ -98,8 +146,8 @@ public:
 
     virtual void Initialize_Data() 
     {
-        Create_Bunny_Scene();           //// TODO: comment out this line for your customized scene
-        // Create_Old_Object_Scene();   //// TODO: uncomment this line for your customized scene
+        // Create_Bunny_Scene();           //// TODO: comment out this line for your customized scene
+        Create_Old_Object_Scene();   //// TODO: uncomment this line for your customized scene
 
         ////initialize shader
         OpenGLShaderLibrary::Instance()->Add_Shader_From_File("a5_vert.vert", "a5_frag.frag", "a5_shader");

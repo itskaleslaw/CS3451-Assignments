@@ -77,19 +77,23 @@ public:
 
     void Create_Shining_Scene()
     {
-        Create_Background(OpenGLColor(0.1f, 0.1f, 0.1f, 1.f), OpenGLColor(0.1f, 0.1f, .3f, 1.f));   //// add background
+        Create_Background(OpenGLColor(0.1f, 0.1f, 0.1f, 1.f), OpenGLColor(0.2f, 0.1f, .2f, 1.f));   //// add background
 
         //// Step 7: Add your customized mesh objects and specify their transform and material properties by mimicking Create_Bunny_Scene() 
         /* Your implementation starts */
-
+        auto wine_glass = Add_Obj_Mesh_Object("Wine_bottle.obj");
+        wine_glass->Set_Ka(Vector3f(0.f, 0.25f, 0.f));  // Ambient color: dark green
+        wine_glass->Set_Kd(Vector3f(0.f, 0.4f, 0.f));  // Diffuse color: dark green
+        wine_glass->Set_Ks(Vector3f(1.f, 1.f, 1.f));   // Specular color: white for shininess
+        wine_glass->Set_Shininess(156.f);              // High shininess for glass-like effect
         /* Your implementation ends */
     }
 
     //// Step 7: Comment out Create_Bunny_Scene() and uncomment Create_Shining_Scene() for your customized scene.
     virtual void Initialize_Data()
     {
-        Create_Bunny_Scene();               //// TODO: comment out this line for your customized scene
-        //Create_Shining_Scene();           //// TODO: uncomment this line for your customized scene
+        // Create_Bunny_Scene();               //// TODO: comment out this line for your customized scene
+        Create_Shining_Scene();           //// TODO: uncomment this line for your customized scene
 
         OpenGLShaderLibrary::Instance()->Add_Shader_From_File("a4_vert.vert", "a4_frag.frag", "a4_shader");
         for (auto& mesh_obj : mesh_object_array) {

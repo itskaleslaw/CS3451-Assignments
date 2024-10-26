@@ -64,7 +64,12 @@ vec4 shading_texture_with_checkerboard()
     vec2 uv = vtx_uv;           //// the uv coordinates you need to calculate the checkerboard color
 
     /* your implementation starts */
-    
+    int cell_size = 10;
+    int ix = int(floor(cell_size * uv.x));
+    int iy = int(floor(cell_size * uv.y));
+    if ((ix + iy) % 2 == 0) {
+        color = vec3(1.0);
+    }
 
     /* your implementation ends */
 
@@ -84,7 +89,7 @@ vec4 shading_texture_with_color()
     vec2 uv = vtx_uv;           //// the uv coordinates you need to read texture values
 
     /* your implementation starts */
-    
+    color = texture(tex_color, uv);
 
     /* your implementation ends */
 
@@ -115,11 +120,11 @@ vec4 shading_texture_with_phong(Light light, vec3 e, vec3 p, vec3 s, vec3 n)
     vec3 tex_color = shading_texture_with_color().rgb;      //// the texture value read from your previously implemented function; you need to use this value in your phong shading model
     
     /* your implementation starts */
-    
+    vec3 new_color = ka * light.Ia + tex_color * (kd * light.Id * max(0, dot(normalize(s - p), n))) + ks * light.Is * pow(max(0, dot(normalize(e - p), normalize(reflect(p - s, n)))), shininess);
 
     /* your implementation ends */
 
-    return color;
+    return vec4(new_color, 1.0);
 }
 
 //// This function calls your shading_texture_with_phong function with the three declared light sources
@@ -154,7 +159,7 @@ vec3 calc_bitangent(vec3 N, vec3 T)
     vec3 B = vec3(0.0);     //// the bitangent vector you need to calculate
 
     /* your implementation starts */
-    
+    B = normalize(cross(N, T));
 
     /* your implementation ends */
     
@@ -171,7 +176,7 @@ mat3 calc_TBN_matrix(vec3 T, vec3 B, vec3 N)
     mat3 TBN = mat3(0.0);   //// the TBN matrix you need to calculate
 
     /* your implementation starts */
-
+    TBN = mat3(T, B, N);
 
     /* your implementation ends */
 
@@ -192,8 +197,8 @@ vec3 read_normal_texture()
     vec2 uv = vtx_uv;           //// the uv coordinates you need to 
 
     /* your implementation starts */
-    
-
+    vec4 tex_normal_value = texture(tex_normal, uv);
+    normal = tex_normal_value.rgb * 2.0 - 1.0;
     /* your implementation ends */
 
     return normal;
@@ -209,8 +214,7 @@ vec3 calc_perturbed_normal(mat3 TBN, vec3 normal)
     vec3 perturbed_normal = vec3(0.0);
     
     /* your implementation starts */
-
-
+    perturbed_normal = normalize(TBN * normal);
     /* your implementation ends */
     
     return perturbed_normal;
@@ -238,7 +242,8 @@ vec4 shading_texture_with_normal_mapping()
     vec3 perturbed_normal = vec3(0.0);  //// perturbed normal
 
     /* your implementation starts */
-    
+    vec3 B = calc_bitangent(N, T);
+    perturbed_normal = calc_perturbed_normal(calc_TBN_matrix(T, B, N), read_normal_texture());
 
     /* your implementation ends */
 
@@ -257,16 +262,16 @@ void main()
     //// Step 2: Read Color from Texture Sampler
     //// Your task is to implement the shading_texture_with_color() function
     //// Uncomment the following line to call the function (you might also need to comment out previous lines that assign frag_color)
-    // frag_color = shading_texture_with_color();
+    frag_color = shading_texture_with_color();
 
     //// Step 3: Phong Shading with Texture
     //// Your task is to implement the shading *shading_texture_with_phong()* function, that is called within shading_texture_with_lighting()
     //// Uncomment the following line to call the function (you might also need to comment out previous lines that assign frag_color)
-    // frag_color = shading_texture_with_lighting();
+    frag_color = shading_texture_with_lighting();
 
     //// Step 4: Phong Shading with Normal Mapping
     //// Your tasks are to implement the five functions as mentioned below that are used to calcuate perturbed normal vector in the shading_texture_with_normal_mapping() function: 
     //// (1) calc_bitangent(), (2) calc_TBN_matrix(), (3) read_normal_texture(), (4) calc_perturbed_normal(), and (5) shading_texture_with_normal_mapping()
     //// Uncomment the following line to call the function (you might also need to comment out previous lines that assign frag_color)
-    // frag_color = shading_texture_with_normal_mapping();
+    frag_color = shading_texture_with_normal_mapping();
 }

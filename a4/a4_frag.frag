@@ -47,7 +47,7 @@ vec4 shading_normal()
     
     /* your implementation starts */
 
-    return vec4(0.f,0.f,0.f,1.f);
+    return vec4((_normal * 0.5) + 0.5, 1.0);
     /* your implementation ends */
 }
 
@@ -65,8 +65,8 @@ vec4 shading_normal()
 vec4 shading_ambient(Light light) 
 {
     /* your implementation starts */
-    
-    return vec4(0.f,0.f,0.f,1.f);
+    vec3 ambient = ka * light.Ia;
+    return vec4(ambient, 1.0);
     /* your implementation ends */
 }
 
@@ -87,8 +87,8 @@ vec4 shading_ambient(Light light)
 vec4 shading_lambertian(Light light, vec3 p, vec3 s, vec3 n) 
 {
     /* your implementation starts */
-
-    return vec4(0.f,0.f,0.f,1.f);
+    vec3 lambertian = ka * light.Ia + kd * light.Id * max(0.0, dot(normalize(s - p), normalize(n)));
+    return vec4(lambertian, 1.0);
     /* your implementation ends */
 }
 
@@ -110,8 +110,8 @@ vec4 shading_lambertian(Light light, vec3 p, vec3 s, vec3 n)
 vec4 shading_phong(Light light, vec3 e, vec3 p, vec3 s, vec3 n) 
 {
     /* your implementation starts */
-    
-    return vec4(0.f,0.f,0.f,1.f);
+    vec3 phong = ka * light.Ia + kd * light.Id * max(0.0, dot(normalize(s - p), normalize(n))) + ks * light.Is * pow(max(0, dot(normalize(e - p), normalize(reflect(p - s, n)))), shininess);
+    return vec4(phong,1.f);
     /* your implementation ends */
 }
 
@@ -132,8 +132,8 @@ Light get_spinny_light(Light light)
     /* your implementation starts */
 
     mat4 light_model_mtx = 
-        mat4(1., 0., 0., 0., 
-             0., 1., 0., 0., 
+        mat4(cos(theta), sin(theta), 0., 0., 
+             -sin(theta), cos(theta), 0., 0., 
              0., 0., 1., 0., 
              0., 0., 0., 1.);
     
@@ -166,21 +166,21 @@ void main()
     //// Your implementation will be in the function shading_normal
     //// Uncomment the following line to call the function
 
-    // frag_color = shading_ambient(light1);
+    frag_color = shading_ambient(light1);
 
     //// Step 3: Lambertian shading
     //// Your task is to implement the Lambertian shading function
     //// Your implementation will be in the function shading_lambertian
     //// Uncomment the following line to call the function
 
-    // frag_color = shading_lambertian(light1, p, s1, n);
+    frag_color = shading_lambertian(light1, p, s1, n);
 
     //// Step 4: Phong shading
     //// Your task is to implement the Phong shading function
     //// Your implementation will be in the function shading_phong
     //// Uncomment the following line to call the function
 
-    // frag_color = shading_phong(light1, e, p, s1, n);
+    frag_color = shading_phong(light1, e, p, s1, n);
 
     //// Step 5: multiple lights
     //// By default we calculate the contribution from light1. 
@@ -190,9 +190,9 @@ void main()
     //// Uncomment the following line, declare a new light, and add its contribution to frag_color.
 
     /* Your implementation starts here */
+    Light light2 = Light(vec3(-3, 1, 3), vec3(0.05, 0.02, 0.03), vec3(0.4, 0.2, 0.3), vec3(0.4, 0.2, 0.3));
     
-    
-    // frag_color = shading_phong(light1, e, p, s1, n);
+    frag_color = shading_phong(light1, e, p, s1, n) + shading_phong(light2, e, p, light2.position, n);
     
     /* Your implementation ends here */
 
@@ -201,8 +201,8 @@ void main()
     //// Your implementation will take place in the function get_spinny_light
     //// After implementing rotation in get_spinny_light, uncomment the following two lines and press key 'p' to start the animation
     
-    // Light spinnyLight = get_spinny_light(light1);
-    // frag_color = shading_phong(spinnyLight, e, p, spinnyLight.position, n);
+    Light spinnyLight = get_spinny_light(light1);
+    frag_color = shading_phong(spinnyLight, e, p, spinnyLight.position, n);
 
     //// Step 7: your customized lighting effect
     //// Implement your customized lighting effects on your customized mesh objects 
@@ -210,5 +210,5 @@ void main()
     //// Here we provide the phong shading model as the default implementation
     //// Customize it with your own lighting model
 
-    // frag_color = shading_phong(light1, e, p, s1, n);
+    frag_color = shading_phong(light1, e, p, s1, n);
 }

@@ -1,0 +1,1 @@
+In my custom implementation, I was able to use Phong shading in order to create a realistic lighting effect for the bottle. By adjusting the material properties to be dark green and increasing shininess, I was able to mimic glass in a way. I also set the specular color to white, since light that reflects off glass is often white.

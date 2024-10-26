@@ -1,0 +1,1 @@
+In order to create my custom scene, I leveraged matrix transformations, material calculations, as well as texture and normal mapping to mimic the shininess and rough texture of the gears. I used one of the given normal maps, then transformed the gears to sit on top of each other. I set their material properties to make them look shiny and mimic metal texture.
